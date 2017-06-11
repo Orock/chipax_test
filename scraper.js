@@ -35,23 +35,19 @@ let scraper = (url) => {
         let query = `INSERT INTO currencies (uf, usd, eur, created_at) VALUES ('${uf}', '${usd}', '${eur}', now())`;
         pool.getConnection().then( (connection) => {
           connection.query(query).then((rows) => {
-            console.log(uf);
-            console.log(usd);
-            console.log(eur);
 
             resolve ({
               'uf': uf,
               'usd': usd,
               'eur': eur,
             });
-            
+
           })
         }).catch( (err) => {
            done(err);
         });
 
       } else {
-        console.log("Se encontró un error: " + error);
         reject (error);
       }
     });

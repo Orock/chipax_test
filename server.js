@@ -15,16 +15,13 @@ app.get('/', (req, res) => {
     
     connection.query(query).then((rows) => {
       if (rows.length>0){
-        console.log(rows);
         return res.send(rows);
       }else{
         
         // Si no hay datos para el dia, se scrapea
         scraper(url).then((data) => {
-          console.log(data);
           return res.send(data);
         }).catch((errorMessage) => {
-          console.log(errorMessage);
           return res.send(errorMessage);
         });
       }
