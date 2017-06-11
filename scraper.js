@@ -18,7 +18,7 @@ let scraper = (url) => {
 
           // console.log($(lines[0]).html() + ' -> ' + $(lines[lines.length-1]).html())
 
-          // se valida que realmente sea la moneda, en algun momento podria no estar una
+          // Se valida que realmente sea la moneda, en algun momento podria no estar una
           switch($(lines[0]).html().trim()) {
             case 'UF':
               uf = $(lines[lines.length-1]).html().replace('.', '').replace(',', '.');
@@ -43,8 +43,8 @@ let scraper = (url) => {
             });
 
           })
-        }).catch( (err) => {
-           done(err);
+        }).catch( (error) => {
+           reject(error);
         });
 
       } else {

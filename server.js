@@ -9,30 +9,52 @@ const url = "http://www.bcentral.cl/es/faces/home?_adf.ctrl-state=9aox25baj_4&_a
 
 app.get('/', (req, res) => {
 
-  // Verificamos que los datos que existan para no volver a scrapear
-  let query = `SELECT * FROM currencies WHERE DATE(created_at) = CURDATE()`;
-  pool.getConnection().then((connection) => {
-    
+  let newData
+  pool.getConnection().then((conn) => {
+    connection = conn;
+    // Verificamos que los datos que existan para no volver a scrapear
+    let query = `SELECT id FROM currencies WHERE DATE(created_at) = CURDATE()`;
     connection.query(query).then((rows) => {
-      if (rows.length>0){
-        return res.send(rows);
-      }else{
-        
+      
+      if (rows.length == 0){        
         // Si no hay datos para el dia, se scrapea
         scraper(url).then((data) => {
-          return res.send(data);
+          // No hace nada, no se necesita mostrar el dato nuevo
         }).catch((errorMessage) => {
           return res.send(errorMessage);
         });
       }
-    })
 
+    });
+
+  }).then(() => {
+    // Devuelve los datos anteriores
+    let query = `SELECT uf, usd, eur, created_at FROM currencies WHERE DATE(created_at) < CURDATE() ORDER BY created_at DESC`;
+    connection.query(query).then((rows) => {
+      return res.send(rows);
+    }).catch( (error) => {
+      return res.send(error);
+    });
+  }).catch( (error) => {
+    return res.send(error);
   });
   
 });
 
+app.get('/todos', (req, res) => {
+  // Eliminamos los datos de la db para probar que funciona
+  let query = `SELECT uf, usd, eur, created_at FROM currencies ORDER BY created_at DESC`;
+  pool.getConnection().then((connection) => {  
+    connection.query(query).then((rows) => {
+      return res.send(rows);
+    }).catch((errorMessage) => {
+      return res.send(errorMessage);
+    });
+  });
+});
+
 app.get('/truncate', (req, res) => {
-  // Eliminamso los datos de la db para probar que funciona
+  // Eliminamos los datos de la db para probar que funciona
   let query = `TRUNCATE currencies`;
   pool.getConnection().then((connection) => {  
     connection.query(query).then((rows) => {
