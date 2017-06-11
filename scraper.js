@@ -5,7 +5,7 @@ const {pool} = require('./db/mysql');
 let scraper = (url) => {
 
   let uf, utm, usd, eur;
-  console.log(usd);
+  
   return new Promise((resolve, reject) => {
     request(url, (error, response, body) => {
       if (!error) {
